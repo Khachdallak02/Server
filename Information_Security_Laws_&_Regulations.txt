@@ -1,0 +1,28 @@
+Information Security Laws & Regulations
+
+The advancement of technology and the internet has made information more accessible than ever before. This has broadened the threats to information security. In this lesson, we will examine some of the laws and regulations that govern the collection transmission and storage of data, and how businesses can become compliant.
+What is a Law? What is a Regulation?
+A law is a rule that is enacted by the judicial system of the country. These rules are created by the lawmakers. A law is enforceable by the country's judicial system and the lawbreaker can be prosecuted in court.
+
+A regulation is the process, or body, responsible for ensuring that the law is put into effect. A regulation explains the details necessary, whether technical , operational or legal , to put the law into effect.
+
+Example: The law says drivers should produce a valid license at all times. To enforce this law, traffic police do random checking.
+
+Information security laws and regulations govern the acquiring, transmitting and storing of information (meaningful data). Why all this protection?
+
+The rapid advancement of technology and the unprecedented growth of the internet has increased the field of exposure of data as a whole. The list of electronic crimes is as unlimited, as the imaginations of those who use technology in harmful and dangerous ways. Technology has served the world 'convenience' (everything from the comfort of your home or device: banking, shopping, working etc.) nicely on a platter! This convenience has exposed businesses and corporation to limitless threats.
+
+As such, information has become an extremely valuable asset which could be deliberately destroyed, stolen, exposed, or illegally sold. Different countries have different laws governing information. With our reference point being United States law, we will examine briefly some of the laws and regulations that protect information.
+
+Let's examine the life of a 45 year old man named Allen. He is married with a wife and two kids. He runs his own business. He is a professional photographer. He subscribes to a cloud service and can safely and securely back up and store his data which include home CCTV backups and his life's work in photography. His family banks at Grouper Bank PLC. He switched health insurance companies 10 years ago and is now with All Family Insurance Ltd.
+
+Breach Notification Law
+A breach occurs when confidential, sensitive or protected information was, or is reasonably believed to have been viewed, stolen or used by unauthorized individuals. This may include personal identifiable information, trade secrets, banking details, or intellectual property.
+
+Grouper Bank PLC suffered such a breach which was detected 48 hours later. It was discovered that customer personal information, account numbers and bank balance details were copied and exposed. GoGo TV was the first to break the news. Allen heard about the breach and panicked.
+
+The Law : In the event that a breach occurs within an institution or organization, it is required by law that, the custodians of the information (whether in electronic or physical form), notify all parties that will be affected by this breach.
+
+US Information Security regulation details personal information to include: first name, last name, social security number, driver's license number, user names, email address and account numbers.
+
+By law, it is mandatory for Grouper Bank PLC to Inform Allen about the breach that exposed his personal information. This is to enable Allen the opportunity, to take necessary steps to protect his identity, and subsequently his family and assets.
