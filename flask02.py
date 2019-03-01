@@ -34,9 +34,17 @@ def index():
         username = session['username']
         with shelve.open('write') as d:
             data = level(d[username])
-        return "Welcome back  " + username + ' !!!' + flask.render_template('page.html', data=data)
-    return "You are not logged in, please log in or create a new account to continue" + \
-           flask.render_template('index.html')
+        return "Welcome back  " + username + ' !!!' + flask.render_template('page.html', data=data) + \
+             flask.render_template('ADD_article.html')
+    return "You are not logged in." + "You can still read other's articles and comments." + \
+                                      "However you can't writes new articles or comments" + \
+                                      "please log in or create a new account to write articles and comment." + \
+           flask.render_template('index.html') + flask.render_template('skizb.html')
+
+
+@app.route('/first_article')
+def first_article():
+    return flask.render_template('first_article.html') + flask.render_template('Comment_section.html')
 
 
 @app.route('/create')
@@ -110,7 +118,8 @@ def login_page():
 
                 if bool(sha256_crypt.verify(password, d[username])):
                     session['username'] = username
-                    return "Hello " + username + flask.render_template('page.html', data=data)
+                    return "Hello " + username + flask.render_template('page.html', data=data) + \
+                           flask.render_template('ADD_article.html')
                 else:
                     return "Wrong username or password " + flask.render_template('index.html')
             else:
