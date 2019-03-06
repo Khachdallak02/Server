@@ -1,15 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title> </title>
+    <meta charset="UTF-8">
+    <title>Articles</title>
+     <style>
+         .button {
+         background-color: #1c87c9;
+         border: none;
+         color: white;
+         padding: 20px 34px;
+         text-align: center;
+         text-decoration: none;
+         display: inline-block;
+         font-size: 20px;
+         margin: 4px 2px;
+         cursor: pointer;
+         }
+      </style>
 </head>
 
-
-<body>
 <p><a href="{{ url_for('logout') }}">Log out</a></p>
 	<p>Password Status:{%for data in data%} <progress  value={{data}}  min = "0" max="10"> {%endfor%}
 	</progress></p>
-
-</body>
-
-</html>
