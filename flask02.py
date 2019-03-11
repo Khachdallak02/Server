@@ -22,11 +22,13 @@ app.config.update(
     MAIL_PASSWORD='TAOTZ72BNGBC',
 )
 mail = Mail(app)
+s = "abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()?"
 with shelve.open('write') as d:
-    #d['comments123456'] = [('Algorithms to Live By (Book Review)', 1, """'first_article'"""),
-                     #      ('AAHhaaha Python', 2, """'second_article'"""),
-                       #    ('Благотворительный фонд принца Чарльза оказался связан с российской сетью офшоров',
-                      #      3, """'third_article'""")]
+    d['comments123456'] = [('Algorithms to Live By (Book Review)', 1, """'first_article'""", 'khachdallak', 0),
+                           ('AAHhaaha Python', 2, """'second_article'""", 'khachdallak', 0),
+                           ('Благотворительный фонд принца Чарльза оказался связан с российской сетью офшоров',
+                           3, """'third_article'""",'khachdallak', 0)]
+    d['naxord123456'] = len(d['comments123456'])
     if 'comments123' in d:
         comments = d['comments123']
     else:
@@ -41,19 +43,40 @@ with shelve.open('write') as d:
         comments3 = {}
     if 'comments123456' in d:
         articles = d['comments123456']
+        if len(articles) > d['naxord123456']:
+            email = d['male{name}'.format(name=articles[-1][3])]
+            str1 = 'Congrats {0}, your article has proved '.format(articles[-1][3])
+            msg = Message(str1,
+                          sender=("POWERFUL COMPANY", 'asalaanonymous@gmail.com'), recipients=[email], )
+            msg.body = 'Congrats {0}, your article has proved '.format(articles[-1][3])
+            submit_name = 'Information_Security_Laws_&_Regulations.txt'
+            assert msg.sender == "POWERFUL COMPANY <asalaanonymous@gmail.com>"
+            mail.send(msg)
     else:
         articles = []
+    d['naxord123456'] = len(d['comments123456'])
 
 
 def listeverything(s=''):
     for i in articles:
         s += '<p><a href='
-
         s += i[2]
         s += '>'
         s += i[0]
         s += '</a> </p>'
     return s
+
+
+def reject(sad_username):
+    email = d['male{name}'.format(name=sad_username)]
+    str1 = 'Sorry, {0}, ' \
+           'we have to reject your article, because its content was inappropriate with our site '.format(sad_username)
+    msg = Message(str1,
+                  sender=("POWERFUL COMPANY", 'asalaanonymous@gmail.com'), recipients=[email], )
+    msg.body = str1
+    assert msg.sender == "POWERFUL COMPANY <asalaanonymous@gmail.com>"
+    mail.send(msg)
+    return None
 
 
 def sortSecond(val):
@@ -90,8 +113,12 @@ def index():
 
 @app.route('/add')
 def add():
-    username = session['username']
-    return flask.render_template('add_article_main_page.html', data=str(username))
+    if 'username' in session:
+        username = session['username']
+        return flask.render_template('add_article_main_page.html', data=str(username))
+    else:
+        return "You are not allowed to access to this site if you aren't signed in. " \
+               "Please go home, sign in, to get acces to this page." + """<a href='/'> <h2>GO HOME</h2></a>"""
 
 
 @app.route('/first_article')
@@ -103,7 +130,7 @@ def first_article():
     for i in a:
         for individual in i[1]:
             all_comments += str(str(i[0]) + ' : ' + str(individual) + '<br/>')
-    return flask.render_template('first_article.html') + all_comments + flask.render_template('Comment_section.html')
+    return flask.render_template('first_article.html', rating=articles[0][4]) + all_comments + flask.render_template('Comment_section.html')
 
 
 @app.route('/second_article')
@@ -115,7 +142,8 @@ def second_article():
     for i in a:
         for individual in i[1]:
             all_comments += str(str(i[0]) + ' : ' + str(individual) + '<br/>')
-    return flask.render_template('second_article.html') + all_comments + flask.render_template('Comment_section.html')
+    return flask.render_template('second_article.html', rating=articles[1][4]) + \
+           all_comments + flask.render_template('Comment_section.html')
 
 
 @app.route('/third_article')
@@ -127,22 +155,26 @@ def third_article():
     for i in a:
         for individual in i[1]:
             all_comments += str(str(i[0]) + ' : ' + str(individual) + '<br/>')
-    return flask.render_template('third_article.html') + all_comments + flask.render_template('Comment_section.html')
+    return flask.render_template('third_article.html', rating=articles[2][4]) + \
+           all_comments + flask.render_template('Comment_section.html')
 
 
 @app.route('/all_comments')
 def all_comments():
-    username = session['username']
-    a = list(comments.items())
-    all_comments = ''
-    qaunt = 1
-    for i in a:
-        for individual in i[1]:
-            if str(i[0]) == username:
-                all_comments += str(str(qaunt) + ' : ' + str(individual) + '<br/>')
-                qaunt += 1
-    return "Here are listed all the comments of " + username + ' : ' + '<br/><br/><br/><br/>' + all_comments
-
+    if 'username' in session:
+        username = session['username']
+        a = list(comments.items())
+        all_comments = ''
+        qaunt = 1
+        for i in a:
+            for individual in i[1]:
+                if str(i[0]) == username:
+                    all_comments += str(str(qaunt) + ' : ' + str(individual) + '<br/>')
+                    qaunt += 1
+        return "Here are listed all the comments of " + username + ' : ' + '<br/><br/><br/><br/>' + all_comments
+    else:
+        return "You are not allowed to access to this site if you aren't signed in. " \
+               "Please go home, sign in, to get acces to this page." + """<a href='/'> <h2>GO HOME</h2></a>"""
 
 @app.route('/create')
 def create():
@@ -162,7 +194,7 @@ def logout():
 
 @app.route('/send', methods=["GET", "POST"])
 def send_mail():
-    s = "abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()?"
+
     if flask.request.method == "POST":
         username = flask.request.form['username']
         email = flask.request.form['email']
@@ -273,18 +305,62 @@ def first_comment():
                 flask.render_template('first_article.html') + flask.render_template('Comment_section.html') + \
                    "You need to be loged in, if you want to comment on this article   " + """<a href='/'>Login</a>"""
 
-        
+
+@app.route('/add', methods=["GET", "POST"])
+def add_article():
+    if flask.request.method == "POST":
+        title = flask.request.form["title"]
+        text = flask.request.form["text"]
+        with shelve.open('write') as d:
+            if 'index123456' in d:
+                indexa = d['index123456']
+            else:
+                indexa = 0
+            f = open(r"templates\approve{name}.html".format(name=s[indexa]), "w+")
+            indexa += 1
+            d['index123456'] = indexa
+        f.write(title+'<br/>' + text)
+        return "Your article has sent to administration.<br/> If you want to be aware of your article's destiny" \
+               "(whether we " \
+               "reject or approve it), write hear your email. We will send you email as soon as we know the result." \
+               "<br/>  " \
+                + """<br/> <form action="/inform" method = "POST">
+                        <div>
+                            <input type="text" placeholder="Email" required=""  name = "email"/>
+                        </div><br />
+                        <div>
+                            <input type="submit" value="Submit" />
+                            <br />
+                        </div>
+                    </form>"""
+
+
+@app.route('/inform', methods=["GET", "POST"])
+def inform():
+    if flask.request.method == "POST":
+        with shelve.open('write') as d:
+            if 'index123456' in d:
+                indexa = d['index123456']
+            else:
+                indexa = 0
+            d['mail{name}'.format(name=session['username'])] = flask.request.form['email']
+        print(flask.request.form['email'])
+    return "We will have a look on you article asap" + """<br/> <a href = '/'> Go back home</a>"""
+
+
 @app.errorhandler(404)
-def page_not_found(error):
+def page_not_found(error=None):
     return flask.render_template('page_not_found.html'), 404
 
 
-@app.route('/hello/')
-@app.route('/hello/<name>')
-def hello(name=None):
-    return flask.render_template('hello.html', name=name)
+@app.route('/articles/')
+@app.route('/articles/<name>')
+def hello(title=None, text=None, rating=None, author=None):
+    return flask.render_template('first_article.html', title=title, text=text, rating=rating, author=author)
 
 
 if __name__ == '__main__':
     app.run(debug=True)
     app.run(host='0.0.0.0', port=5015)
+    sad_username = input()
+    reject(sad_username)
