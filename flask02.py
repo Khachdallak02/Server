@@ -273,6 +273,17 @@ def first_comment():
                 flask.render_template('first_article.html') + flask.render_template('Comment_section.html') + \
                    "You need to be loged in, if you want to comment on this article   " + """<a href='/'>Login</a>"""
 
+        
+@app.errorhandler(404)
+def page_not_found(error):
+    return flask.render_template('page_not_found.html'), 404
+
+
+@app.route('/hello/')
+@app.route('/hello/<name>')
+def hello(name=None):
+    return flask.render_template('hello.html', name=name)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
