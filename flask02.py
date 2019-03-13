@@ -306,6 +306,18 @@ def comments(name=None):
         return flask.redirect('http://127.0.0.1:5000/')
 
 
+@app.route('/all_comments')
+def all_comments():
+    if 'username' in session:
+        username = session['username']
+        with shelve.open('write') as d:
+            temp = d['comments123456']
+            for article in temp:
+                pass
+        return "All my comments <br/>"
+    else:
+        return flask.redirect('http://127.0.0.1:5000/')
+
 if __name__ == '__main__':
     app.run(debug=True)
     app.run(host='0.0.0.0', port=5015)
