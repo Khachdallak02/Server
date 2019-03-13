@@ -48,12 +48,21 @@ def sortfirst(val):
     return val[0]
 
 
+def number(st):
+    s = ''
+    i = 1
+    while (i <= len(st)) and ('0' < st[-i] < '9'):
+        s += st[-i]
+        i += 1
+    return s[::-1]
+
+
 @app.route('/')
 def index():
     with shelve.open('write') as d:
-            articles = d['comments123456']
+        articles = d['comments123456']
     articles.sort(key=sortsecond)
-    listarticles = listeverything(articles=articles)
+    listedarticles = listeverything(articles=articles)
     if 'username' in session:
         username = session['username']
         with shelve.open('write') as d:
@@ -62,12 +71,12 @@ def index():
             "Welcome back  " + username + ' !!!' + flask.render_template('page.html', data=data) + \
             """<a href='all_comments'> All my comments</a><br/> 
             <h1> Articles </h1>
-            """ + listarticles + flask.render_template('ADD_article.html')
+            """ + listedarticles + flask.render_template('ADD_article.html')
     return "You are not logged in." + "You can still read other's articles and comments." + \
                                       "However you can't writes new articles or comments" + \
-                                      "please log in or create a new account to write articles and comment." + \
+                                      "please log in or create a new account to write articles and comments." + \
            flask.render_template('index.html') +\
-        """<h1> Articles </h1>""" + listarticles + flask.render_template('skizb.html')
+        """<h1> Articles </h1>""" + listedarticles + flask.render_template('skizb.html')
 
 
 @app.route('/add')
@@ -149,7 +158,7 @@ def login_page():
     if flask.request.form["list"] != "Sort":
         if flask.request.method == "POST":
             articles.sort(key=sortsecond)
-            listarticles = listeverything()
+            listedarticles = listeverything(articles)
             username = flask.request.form['username']
             password = flask.request.form['password']
             data = level(password)
@@ -162,7 +171,7 @@ def login_page():
                         return "Hello " + username + flask.render_template('page.html', data=data) + \
                                """<a href='all_comments'> All my comments</a><br/> 
                                            <h1> Articles </h1>
-                                           """ + listarticles + \
+                                           """ + listedarticles + \
                                flask.render_template('ADD_article.html')
                     else:
                         return "Wrong username or password. Please try again " + flask.render_template('index.html')
@@ -180,7 +189,7 @@ def login_page():
                 articles.sort(key=sortsecond, reverse=True)
             if value == "name":
                 articles.sort(key=sortfirst)
-            listarticles = listeverything(articles=articles)
+            listedarticles = listeverything(articles=articles)
             if 'username' in session:
                 username = session['username']
                 with shelve.open('write') as d:
@@ -190,11 +199,11 @@ def login_page():
                            flask.render_template('page.html', data=data) + \
                             """<a href='all_comments'> All my comments</a><br/> 
                             <h1> Articles </h1>
-                """ + listarticles + flask.render_template('ADD_article.html')
+                """ + listedarticles + flask.render_template('ADD_article.html')
             else:
                 return \
                     """ <h1> Articles </h1>
-        """ + listarticles + flask.render_template('skizb.html')
+        """ + listedarticles + flask.render_template('skizb.html')
 
 
 @app.route('/add', methods=["GET", "POST"])
@@ -221,21 +230,17 @@ def page_not_found(error=None):
     return flask.render_template('page_not_found.html'), 404
 
 
-def number(st):
-    s = ''
-    i = 1
-    while (i <= len(st)) and (st[-i] != '/'):
-        s += st[-i]
-        i += 1
-
-    return s[::-1]
-
-
 @app.route('/articles/')
 @app.route('/articles/<title>')
 def hello(title=None, text=None, rating=None, author=None, comment=None):
+
     numb = number(flask.request.base_url)
-   # return hello(articles[0][0], articles[0][2], articles[0][4], articles[0][3])
+    if 'username' in session:
+        username = session['username']
+    else:
+        username = ''
+    if numb == '':
+        return "There is no such articles, please type article name correctly " + "<a href='/'>GO HOME</a>"
     with shelve.open('write') as d:
         for article in d['comments123456']:
             if article[1] != int(numb):
@@ -245,40 +250,60 @@ def hello(title=None, text=None, rating=None, author=None, comment=None):
             rating = article[4]
             author = article[3]
             comment = ''.join(article[5])
-            print(comment)
-            return flask.render_template('first_article.html', title=title, rating=rating, author=author) + text \
-                  + "<br/>" + "<h3>Comments</h3><br/>" + comment + flask.render_template('Comment_section.html', name=numb)
-        return "There is no such articles, please type article name correctly"
+            if 'username' in session:
+                return flask.render_template('first_article.html', title=title, rating=rating, author=author, name=numb,
+                                             username=username) + text \
+                       + "<br/>" + "<h3>Comments</h3><br/>" + comment + flask.render_template('Comment_section.html',
+                                                                                              name=numb)
+            else:
+                return flask.render_template('first_article.html', title=title, rating=rating, author=author, name=numb,
+                                             username=username) + text \
+                       + "<br/>" + "<h3>Comments</h3><br/>" + comment
+
 
 
 @app.route('/articles/<name>', methods=["GET", "POST"])
 def comments(name=None):
     numb = number(flask.request.base_url)
-    username = session['username']
-    comment = flask.request.form['comment']
-    if flask.request.method == "POST":
+    if 'username' in session:
+        username = session['username']
+    else:
+        username = ''
+    if flask.request.form["list"] == "Submit":
+        comment = flask.request.form['comment']
+        if flask.request.method == "POST":
+            with shelve.open('write') as d:
+                temp = d['comments123456']
+                i = 0
+                for article in temp:
+                    if article[1] != int(numb):
+                        i += 1
+                        continue
+                    temp[i][5].append(str(username + " : " + comment + "<br/>"))
+                    title = article[0]
+                    text = article[2]
+                    rating = article[4]
+                    author = article[3]
+                    comment2 = ''.join(temp[i][5])
+                    d['comments123456'] = temp
+        return "Your comment has successfully added " + flask.render_template('first_article.html', title=title,
+        rating=rating, author=author, name=numb, username=username) + text + \
+               "<br/>"\
+            + "<h3>Comments</h3><br/>" + comment2 + flask.render_template('Comment_section.html', name=numb)
+    else:
         with shelve.open('write') as d:
             temp = d['comments123456']
-            i=0
-            for article in temp:
-                if article[1] != int(numb):
-                    i+=1
-                    continue
-                print(article[5])
-                temp[i][5].append(str(username + ":" + comment + "<br/>"))
-                article[5].append(str(username + ":" + comment + "<br/>"))
-                print(article[5])
-                title = article[0]
-                text = article[2]
-                rating = article[4]
-                author = article[3]
-                comment2 = ''.join(article[5])
-                #d['comments123456'][i][5] = article[5]
-                print(temp)
-                d['comments123456']=temp
-    return "Your comment has successfully added " + flask.render_template('first_article.html', title=title,
-                                                                        rating=rating, author=author) + text + "<br/>"\
-        + "<h3>Comments</h3><br/>" + comment2 + flask.render_template('Comment_section.html', name=numb)
+            flag = False
+            for i in range(len(temp)-1):
+                if not flag:
+                    if temp[i][1] != int(numb):
+                        continue
+                flag = True
+                temp[i] = temp[i+1]
+                temp[i][1] -= 1
+            temp = temp[:-1]
+            d['comments123456'] = temp
+        return flask.redirect('http://127.0.0.1:5000/')
 
 
 if __name__ == '__main__':
