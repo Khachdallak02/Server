@@ -25,8 +25,8 @@ mail = Mail(app)
 s = "abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()?"
 
 
-
-def listeverything(s='', articles=[]):
+def listeverything(articles):
+    s=''
     for i in articles:
         s += '<p><a href=/articles/'
         s += str(i[1])
@@ -67,7 +67,7 @@ def index():
                                       "However you can't writes new articles or comments" + \
                                       "please log in or create a new account to write articles and comment." + \
            flask.render_template('index.html') +\
-                    """<h1> Articles </h1>""" + listarticles + flask.render_template('skizb.html')
+        """<h1> Articles </h1>""" + listarticles + flask.render_template('skizb.html')
 
 
 @app.route('/add')
@@ -205,7 +205,7 @@ def add_article():
             text = flask.request.form["text"]
             username = session['username']
             with shelve.open('write') as d:
-                a = ['', 0, text, username, 0, """"""]
+                a = ['', 0, text, username, 0, []]
                 a[0] = title
                 a[1] = len(d['comments123456']) + 1
                 d['comments123456'] += [a]
@@ -244,10 +244,10 @@ def hello(title=None, text=None, rating=None, author=None, comment=None):
             text = article[2]
             rating = article[4]
             author = article[3]
-            comment = article[5]
+            comment = ''.join(article[5])
             print(comment)
-            return flask.render_template('first_article.html', title=title, rating=rating, author=author) + text\
-                + comment + flask.render_template('Comment_section.html', name=numb)
+            return flask.render_template('first_article.html', title=title, rating=rating, author=author) + text \
+                  + "<br/>" + "<h3>Comments</h3><br/>" + comment + flask.render_template('Comment_section.html', name=numb)
         return "There is no such articles, please type article name correctly"
 
 
@@ -258,23 +258,27 @@ def comments(name=None):
     comment = flask.request.form['comment']
     if flask.request.method == "POST":
         with shelve.open('write') as d:
-            for article in d['comments123456']:
+            temp = d['comments123456']
+            i=0
+            for article in temp:
                 if article[1] != int(numb):
+                    i+=1
                     continue
                 print(article[5])
-                l=[article[5], str(username + ":" + comment + "<br/>")]
-                print(l)
-                article[5] = ''.join(l)
+                temp[i][5].append(str(username + ":" + comment + "<br/>"))
+                article[5].append(str(username + ":" + comment + "<br/>"))
                 print(article[5])
                 title = article[0]
                 text = article[2]
                 rating = article[4]
                 author = article[3]
-                comment2 = article[5]
-                print(article[5])
-    return "Your comment has successfully added " + flask.render_template('first_article.html', title=title, rating=rating, author=author) + text\
-                + comment2 + flask.render_template('Comment_section.html', name=numb)
-
+                comment2 = ''.join(article[5])
+                #d['comments123456'][i][5] = article[5]
+                print(temp)
+                d['comments123456']=temp
+    return "Your comment has successfully added " + flask.render_template('first_article.html', title=title,
+                                                                        rating=rating, author=author) + text + "<br/>"\
+        + "<h3>Comments</h3><br/>" + comment2 + flask.render_template('Comment_section.html', name=numb)
 
 
 if __name__ == '__main__':
