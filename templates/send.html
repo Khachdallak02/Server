@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+	<h1>Enter your username and email and we will send you new passsword</h1>
+	<meta http-equiv = "refresh" url = "{{ url_for('index') }}"/>
+</head>
+<body>
+<form action="/send" method = "POST">
+			
+			<div>
+				<input type="text" placeholder="Username" required="" name = "username"/>
+			</div> <br />
+			<div>
+				<input type="text" placeholder="Email" required=""  name = "email"/>
+			</div><br />
+			<div>
+				<input type="submit" value="Submit" />
+				<br />
+			</div>
+		</form>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+	<h1>Login</h1>
+	<!--<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='homepage_style.css') }}">-->
+	<meta http-equiv = "refresh" url = "{{ url_for('index') }}"/>
+</head>
+<body>
+		<form action="/" method = "POST">
+		
+			<div>
+				<input type="text" placeholder="Username" required="" name = "username"/>
+			</div> <br />
+			<div>
+				<input type="password" placeholder="Password" required="" name = "password"/>
+			</div><br />
+			<div>
+				<input type="submit" name = "list" value="Log in" />
+				<br />
+			</div>
+		</form>
+<p><a href="{{ url_for('create') }}">Create an account</a></p>
+<p><a href="{{ url_for('send') }}">Forgot password</a></p>
+</body>
+

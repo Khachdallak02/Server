@@ -1,0 +1,12 @@
+<p>List Articles by</p><form action="/" method = "POST">
+              <select class="form-control" id="rating" name="rating">
+                  <option value="date1" selected>Date(from oldest to newest)</option>
+                  <option value="date2">Date(from newest to oldest)</option>
+                  <option value="name">Name</option>
+
+</select>
+<div>
+				<input type="submit" name = "list" value="Sort" />
+				<br />
+			</div></form>
+<a href="{{ url_for('add') }}" class="button">Add article</a>
