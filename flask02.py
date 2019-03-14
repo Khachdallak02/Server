@@ -310,13 +310,23 @@ def comments(name=None):
 def all_comments():
     if 'username' in session:
         username = session['username']
+
+        all_my_comments = ""
         with shelve.open('write') as d:
             temp = d['comments123456']
             for article in temp:
-                pass
-        return "All my comments <br/>"
+                for comment in article[5]:
+                    s = ''
+                    i = 0
+                    while comment[i] != ' ':
+                        s += comment[i]
+                        i += 1
+                    if s == username:
+                        all_my_comments += comment + ' ( in the article : ' + article[0] + ') <br/>'
+        return "All my comments <br/>" + all_my_comments
     else:
         return flask.redirect('http://127.0.0.1:5000/')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
